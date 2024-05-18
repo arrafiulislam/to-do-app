@@ -1,5 +1,9 @@
+// app/page.js
 "use client";
 import { useState } from "react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createTask } from "./serverActions"; // Adjust the path as needed
 
 export default function Home() {
   const [todo, setToDo] = useState([]);
@@ -7,25 +11,46 @@ export default function Home() {
 
   const getRandomNumber = () => {
     return Math.floor(Math.random() * 9999);
-  }
+  };
 
   const handleKeyUp = (key) => {
     if (key === 'Enter' && newToDo) {
       const randomNumber = getRandomNumber();
       const newItem = {
         id: `item-${randomNumber}`,
-        content: newToDo
+        content: newToDo,
       };
 
       setToDo([...todo, newItem]);
       setNewToDo('');
     }
-  }
+  };
+
+  const handleSubmit = async () => {
+    const randomNumber = getRandomNumber();
+    const newItem = {
+      id: `item-${randomNumber}`,
+      content: newToDo,
+    };
+
+    setToDo([...todo, newItem]);
+    setNewToDo('');
+
+    // Create a FormData object and append the new task
+    const data = new FormData();
+    data.append("task", newToDo);
+
+    // Call the server action to create the task
+    await createTask(data);
+
+    // Redirect or handle after task creation
+    
+  };
 
   const handleDelete = (index) => {
     const newTodoList = todo.filter((_, i) => i !== index);
     setToDo(newTodoList);
-  }
+  };
 
   return (
     <main>
@@ -49,6 +74,7 @@ export default function Home() {
               onKeyUp={(event) => handleKeyUp(event.key)}
               className="w-full pl-10 p-2 border-4 rounded-full bg-gray-600 text-white"
               placeholder="Add to To do List"
+              name="task"
             />
           </div>
           <ul className="w-full pt-6">
@@ -66,6 +92,7 @@ export default function Home() {
               </li>
             ))}
           </ul>
+          <button onClick={handleSubmit} className="mt-8 w-20 h-12 rounded-xl bg-red-700 text-gray-200">Add Task</button>
         </div>
       </div>
     </main>

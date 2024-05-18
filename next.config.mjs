@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+    experimental: {
+        // serverActions is no longer needed
+    }
+};
 
 export default nextConfig;
